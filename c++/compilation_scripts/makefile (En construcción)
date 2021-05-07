@@ -1,0 +1,22 @@
+# Makefile for SysIDs JNI-C++ app
+
+LIB = SysIDs
+CC = g++
+CPPFLAGS = -g –Wall -DBUILD_DLL -I"C:\Program Files\Java\jdk-14.0.2\include" -I"C:\Program Files\Java\jdk-14.0.2\include\win32"
+LDFLAGS = -shared -Wl,--output-def=bin\Debug\libSysIDs.def -Wl,--out-implib=bin\Debug\libSysIDs.a -Wl,--dll bin\Debug\SysIDs.dll -luser32
+OBJS = appOps.o biosuuid.o hddID.o logFile.o main.o
+
+$(LIB) : $(OBJS)
+    $(CC) $(LDFLAGS) -o $(OBJS)
+main.o :
+    $(CC) $(CPPFLAGS) -c main.cpp
+appOps.o : appOps.h
+    $(CC) $(CPPFLAGS) -c libs\appOps.cpp
+biosuuid.o : biosuuid.h
+    $(CC) $(CPPFLAGS) -c libs\biosuuid.cpp
+hddID.o : hddID.h
+    $(CC) $(CPPFLAGS) -c libs\hddID.cpp    
+logFile.o: logFile.h
+    $(CC) $(CPPFLAGS) -c libs\logFile.cpp    
+clean:
+    rm -f core $(PROG) $(OBJS)

@@ -47,7 +47,7 @@ void LogFile::writeToLog(){
 void LogFile::execLogProcess(){
     InitializeCriticalSection(&m_cs);
     EnterCriticalSection(&m_cs);
-    thread t([this] {this -> writeToLog();});
+    std::thread t([this] {this -> writeToLog();});
     t.join();
     LeaveCriticalSection(&m_cs);
     DeleteCriticalSection(&m_cs);
