@@ -24,37 +24,40 @@ var userModel = mongoose.model('users', dataSchema)
 /* #################### CRUD OPERATIONS ################### */
 
 /* CREATE */
-function insertUser(inputData){
-  var userData = new userModel(inputData);
-  userData.save();
+async function insertUser(inputData, db){
+  const result = await db.insertOne(inputData);
+  console.log(`New User added. => id: ${result.insertedId}`);
 }
 
 /* READ */
-function findUser(userLicense, callback){
-    var userData = userModel.find({'license': userLicense});
-  userData.exec();
+async function findUser(userLicense, db){
+  const result = await db.findOne({ license: userLicense });
+    if (result) {
+        console.log(`The user exist. => '${userLicense}':`);
+        console.log(result);
+        //console.log(result['_id']);
+    } else {
+        console.log(`User not found.`);
+    }
 }
 
 /* UPDATE */
-function updateUser(inputData, userLicense, callback){
-  var userData = userModel.findOneAndUpdate({'license': userLicense}, inputData);
-  userData.exec();
+async function updateUser(newLicense, userLicense, db){
+    const result = await db.updateOne({ license: userLicense }, { $set: { license: newLicense }});
+    console.log(`${result.matchedCount} document(s) matched the query criteria.`);
+    console.log(`${result.modifiedCount} document(s) was/were updated.`);
 }
 
 /* DELETE */
-function deleteUser(userLicense, callback){
-    var userData = userModel.findOneAndDelete({'license': userLicense});
-  userData.exec();
+async function deleteUser(userLicense, db){
+  const result = await db.deleteOne({ license: userLicense });
+  console.log(`${result.deletedCount} document(s) was/were deleted.`);
 }
 
-function fetchData(){
-  var userData = userModel.find({});
-  userData.exec();
-}
-
-dbConn('LicenseAPI');
-//insertUser({'license':'4123-23421-34-34-4', 'key':'dsrc1234eq34c23q4q2352343q2'});
-fetchData();
-//createDB("licenseAPI");
-//createCollection("licenseAPI", "licenses");
+const db = dbConn('licenseAPI').collection('users');
+//insertUser({'license':'4123-23421-34-34-4', 'key':'dsrc1234eq34c23q4q2352343q2'}, db);
+//findUser('4123-23421-34-34-4', db);
+//updateUser('dsfa-543-gfdg-456g', '4123-23421-34-34-4', db);
+findUser('dsfa-543-gfdg-456g', db);
+deleteUser('dsfa-543-gfdg-456g', db);
 

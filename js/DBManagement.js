@@ -7,3 +7,6 @@ function createDB(DBName){
 function createCollection(DBName, CollectionName){
 
 }
+
+//createDB("licenseAPI");
+//createCollection("licenseAPI", "licenses");
