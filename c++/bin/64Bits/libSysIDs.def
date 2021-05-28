@@ -1,0 +1,4 @@
+EXPORTS
+    DllMain @1
+    Java_ids_IDsCollector_getBIOS_1ID @2
+    Java_ids_IDsCollector_getHDD_1ID @3

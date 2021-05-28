@@ -1,6 +1,8 @@
 package key;
 
 import java.security.*;
+import java.util.Base64;
+import java.util.Base64.Decoder;
 import java.util.Random;
 
 import javax.crypto.Cipher;
@@ -12,6 +14,7 @@ import javax.crypto.spec.SecretKeySpec;
 import dbConn.MySQLConn;
 
 import java.nio.charset.StandardCharsets;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.file.Files;
@@ -35,14 +38,18 @@ public class KeyGen {
     }
     
     public void init_exec() throws Exception {
-        genLicenseKey();
-        //uploadToServer();
         keyPair = getKeyPairFromKeyStore();
         publicKey = keyPair.getPublic();
         privateKey = keyPair.getPrivate();
-        //genAESKey();
+        File file = new File("res/magicSecret.sys");
+        boolean exist = file.exists();
+        
+        genLicenseKey();
+        if (!exist)
+            genAESKey();
         printKey();
         encrypt();
+        //uploadToServer();
         decrypt();
     }
 
@@ -51,7 +58,6 @@ public class KeyGen {
         mysql.insertLicense(licenseKey);
     }
     
-    @SuppressWarnings("unused")
 	private void genAESKey() throws Exception {
         KeyGenerator kgen = KeyGenerator.getInstance("AES");
         kgen.init(128);
@@ -150,14 +156,15 @@ public class KeyGen {
 
     public KeyPair getKeyPairFromKeyStore() throws Exception {
         String path = null;
-        char[] keyStorePassword = "$t0r#Br34k3r".toCharArray();
         path = System.getProperty("user.dir");     
         path += "\\res\\keystore.jks";
         FileInputStream keyStoreData = new FileInputStream(path);
-        
+        Decoder decoder = Base64.getDecoder();
+        byte[] bytes = decoder.decode("dGVzdDEyMw==");
+        char[] keyStorePassword = new String(bytes).toCharArray();
         KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
         keyStore.load(keyStoreData, keyStorePassword); // Keystore password
-        KeyStore.PasswordProtection keyPassword = new KeyStore.PasswordProtection("$t0r#Br34k3r".toCharArray()); // Key password
+        KeyStore.PasswordProtection keyPassword = new KeyStore.PasswordProtection(keyStorePassword); // Key password
         KeyStore.PrivateKeyEntry privateKeyEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry("client", keyPassword);
         java.security.cert.Certificate cert = keyStore.getCertificate("client");     
         PublicKey publicKey = cert.getPublicKey();
