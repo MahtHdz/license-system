@@ -1,14 +1,15 @@
-package key;
+package com.maht.license_gen;
 
-import ids.IDsCollector;
+import com.maht.id_service.IDsCollector;
+
 
 public class Main {
     
     public static void main(String args[]) throws Exception {
-        KeyGen key = new KeyGen();
+        //KeyGen key = new KeyGen();
         String hdd = null, bios = null;
         
-        key.init_exec(); 
+        //key.init_exec(); 
 		
 		IDsCollector IDs = new IDsCollector();
 		try {

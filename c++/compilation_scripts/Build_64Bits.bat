@@ -5,11 +5,10 @@ ECHO ###########################
 ECHO #   STARTING OPERATIONS   #
 ECHO ###########################
 
-SET JNILIB_PATH= -I"C:\Program Files\Java\jdk-14.0.2\include" 
-SET MINGW64_GCC_PATH="C:\Program Files\CodeBlocks\MinGW\bin\g++.exe"
-SET JNILIB_WIN32_PATH=-I"C:\Program Files\Java\jdk-14.0.2\include\win32" 
-SET PROJECT_PATH=C:\Users\maht_\OneDrive\Documentos\GitHub\licenseSystem\c++\
-SET MINGW32_GCC_PATH="C:\Program Files\CodeBlocks\MinGW\bin\x86_64-w64-mingw32-g++.exe"
+SET JNILIB_PATH= -I"C:\Program Files\Java\jdk-16.0.1\include" 
+SET MINGW64_GCC_PATH="C:\Program Files\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin\g++.exe"
+SET JNILIB_WIN32_PATH=-I"C:\Program Files\Java\jdk-16.0.1\include\win32" 
+SET PROJECT_PATH=%1\c++\
 
 SET DLL_NAME=SysIDs
 SET FLAGS= -Wall -DBUILD_DLL -g
@@ -36,9 +35,9 @@ SET OBJS_ABSOLUTE_PATHS[3]=%LIBS_OBJ_OUTPUT_PATH%%OBJS[3]%
 SET OBJS_ABSOLUTE_PATHS[4]=%MAIN_OBJ_OUTPUT_PATH%%OBJS[4]%
 
 Setlocal EnableDelayedExpansion
-ECHO( 
+ECHO. 
 ECHO BUILDING 64-Bits DLL
-ECHO( 
+ECHO.
 FOR /L %%i IN (0, 1, 4) DO (
     ECHO BUILDING !FILES[%%i]! OBJ...
     IF NOT "!FILES[%%i]!" == "main.cpp" (
@@ -50,8 +49,9 @@ FOR /L %%i IN (0, 1, 4) DO (
 )
 ECHO BUILDING DLL...
 @%MINGW64_GCC_PATH%%DLL_FLAGS% %OBJS_ABSOLUTE_PATHS[0]% %OBJS_ABSOLUTE_PATHS[1]% %OBJS_ABSOLUTE_PATHS[2]% %OBJS_ABSOLUTE_PATHS[3]% %OBJS_ABSOLUTE_PATHS[4]% -o %PROJECT_PATH%bin\64Bits\%DLL_NAME%.dll -m64
+XCOPY /s %PROJECT_PATH%bin\64Bits\%DLL_NAME%.dll %1\java\IDService\res
 ECHO DONE.
-ECHO( 
+ECHO. 
 ECHO ###########################
 ECHO #   OPERATIONS COMPLETED  #
 ECHO ###########################

@@ -1,4 +1,4 @@
-package ids;
+package com.maht.id_service;
 
 public class IDsCollector {
 	

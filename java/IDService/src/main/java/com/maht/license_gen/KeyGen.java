@@ -1,8 +1,8 @@
-package key;
+package com.maht.license_gen;
 
+import com.maht.id_service.JsonHandler;
+import com.maht.id_service.KeyStoreLocalHandler;
 import java.security.*;
-import java.util.Base64;
-import java.util.Base64.Decoder;
 import java.util.Random;
 
 import javax.crypto.Cipher;
@@ -11,14 +11,13 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import dbConn.MySQLConn;
-
 import java.nio.charset.StandardCharsets;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import org.json.simple.JSONObject;
 
 public class KeyGen {
     //
@@ -31,6 +30,8 @@ public class KeyGen {
     private IvParameterSpec ivspec = null;
     private String keyFile = "license";
     private String AESKeyFile = "res\\magicSecret";
+    private String JSONPATH = "res\\keystoreInfo.json";
+    private String keystorePath = "\\res\\keystore.jks";
     private String licenseKey = "";
     // private KeyPairGenerator generator = null;
 
@@ -38,7 +39,7 @@ public class KeyGen {
     }
     
     public void init_exec() throws Exception {
-        keyPair = getKeyPairFromKeyStore();
+        keyPair = getKeyPair();
         publicKey = keyPair.getPublic();
         privateKey = keyPair.getPrivate();
         File file = new File("res/magicSecret.sys");
@@ -52,12 +53,12 @@ public class KeyGen {
         //uploadToServer();
         decrypt();
     }
-
+/*
     public void uploadToServer(){
         MySQLConn mysql = new MySQLConn();
         mysql.insertLicense(licenseKey);
     }
-    
+*/  
 	private void genAESKey() throws Exception {
         KeyGenerator kgen = KeyGenerator.getInstance("AES");
         kgen.init(128);
@@ -154,25 +155,15 @@ public class KeyGen {
         }
     }
 
-    public KeyPair getKeyPairFromKeyStore() throws Exception {
-        String path = null;
-        path = System.getProperty("user.dir");     
-        path += "\\res\\keystore.jks";
-        FileInputStream keyStoreData = new FileInputStream(path);
-        Decoder decoder = Base64.getDecoder();
-        byte[] bytes = decoder.decode("dGVzdDEyMw==");
-        char[] keyStorePassword = new String(bytes).toCharArray();
-        KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-        keyStore.load(keyStoreData, keyStorePassword); // Keystore password
-        KeyStore.PasswordProtection keyPassword = new KeyStore.PasswordProtection(keyStorePassword); // Key password
-        KeyStore.PrivateKeyEntry privateKeyEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry("client", keyPassword);
-        java.security.cert.Certificate cert = keyStore.getCertificate("client");     
-        PublicKey publicKey = cert.getPublicKey();
-        PrivateKey privateKey = privateKeyEntry.getPrivateKey();
-        publicKey = cert.getPublicKey();
-        privateKey = privateKeyEntry.getPrivateKey();
-
-        return new KeyPair(publicKey, privateKey);
+    public KeyPair getKeyPair() {
+        JsonHandler JSONH = new JsonHandler();
+        KeyStoreLocalHandler KSLH = new KeyStoreLocalHandler(System.getProperty("user.dir") + keystorePath);
+        
+        JSONObject JSONObj = JSONH.readJSONFile(JSONPATH);
+        KSLH.setAlias((String) JSONObj.get("alias"));
+        KSLH.setEncodedPassword((String) JSONObj.get("pass"));
+        KSLH.decodePassword();
+        return KSLH.getKeyPairFromKeyStore();
     }
     
     public void printKey() throws Exception {
