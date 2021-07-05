@@ -3,6 +3,8 @@
 require('./db/conn');
 const path = require('path');
 const morgan = require('morgan');
+const express = require('express');
+//const passport = require('passport');
 
 /* 
 ################# 
@@ -18,8 +20,11 @@ app.use(express.urlencoded({ extended: true }));
 // Middlewares 
 app.use(morgan('dev'));
 app.use(express.json());
+//app.use(passport.session());
+//app.use(passport.initialize());
 
 // Routes 
+//app.use('/google', require('./routes/google.routes'));
 app.use('/license', require('./routes/license.routes'));
 
 // Static Files 
